@@ -14,18 +14,22 @@ var game = true,
 		x: [],
 		y: [],
 		n: 0,
+		size: 10,
 		color: "#CD0000"},
 		{
 		x: [],
 		y: [],
 		n: 0,
+		size: 10,
 		color: "#104E8B"},
 		{
 		x: [],
 		y: [],
 		n: 0,
+		size: 10,
 		color: "#EEEE00"}],
-	IntervalId;
+	IntervalId,
+	IntervalId2;
 	
 var map = new Array(40);
 $(document).ready(function(){
@@ -43,6 +47,11 @@ $(document).ready(function(){
    		update();
    		render();
 	}, 5000/60);
+	
+
+	IntervalId2 = setInterval(function() {
+   		spawn();
+	}, 3000);
 
 	$(document).keydown(function(e) {
     switch(e.which) {
@@ -109,22 +118,50 @@ function render(){
 	if(snake.x[snake.n-1] < 0 || snake.x[snake.n-1] >= 560){game = false;console.log("end");}
 	
 
-	if(game)createDotSnake();
-	else clearInterval(IntervalId);
+	if(game){
+		createDotSnake();
+		createItem();
+	}
+	else{
+		clearInterval(IntervalId);
+		clearInterval(IntervalId2);
+	} 
+	
 }
 
 function createDotSnake(){
-	
 	for(var i = 0 ;i < snake.n ; i++){
 		ctx.fillStyle = "green";
 		ctx.fillRect(snake.x[i],snake.y[i],snake.size,snake.size);
 		
 	}
 }
-function spawn(){
-	for(var i = 0 ; i < 2 ; i++){
-		item[i].n++;
-		
 
+function createItem(){
+	//console.log(item);
+	for(var num = 0 ; num < 3 ; num++){
+		for(var i = 0 ; i < item[num].n ; i++){
+			ctx.fillStyle = item[num].color;
+			ctx.fillRect(item[num].x[i],item[num].y[i],item[num].size,item[num].size);
+		}
 	}
+}
+
+function spawn(){
+	for(var num = 0 ; num < 3 ; num++){
+		var c = 0;
+		do{
+			var x = Math.floor((Math.random() * 40));
+			var y = Math.floor((Math.random() * 40));
+			
+		}while(map[y][x] == 1);
+
+		map[y][x] = 1;
+		console.log(x + " " + y);
+		item[num].x[item[num].n] = x*pixel;	
+		item[num].y[item[num].n] = y*pixel;
+		createItem(item[num]);
+		item[num].n++;
+	}
+
 }
