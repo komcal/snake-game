@@ -46,7 +46,8 @@ $(document).ready(function(){
 	IntervalId = setInterval(function() {
    		update();
    		render();
-	}, 5000/60);
+   		checkhit()
+	}, 6000/60);
 	
 
 	IntervalId2 = setInterval(function() {
@@ -107,17 +108,15 @@ function update(){
 		}
 		if(snake.y[i] >= 0 && snake.y[i]<560 && snake.x[i] >= 0 && snake.x[i]<=560){
 			map[snake.y[i]/pixel][snake.x[i]/pixel] = 1;
-				
 		}
 	}
 }
 
 function render(){
 	//console.log(snake.y[snake.n-1]);
-	if(snake.y[snake.n-1] < 0 || snake.y[snake.n-1] >= 560){game = false;console.log("end");}
-	if(snake.x[snake.n-1] < 0 || snake.x[snake.n-1] >= 560){game = false;console.log("end");}
+	if(snake.y[snake.n-1] < 0 || snake.y[snake.n-1] >= 560){game = false;}
+	if(snake.x[snake.n-1] < 0 || snake.x[snake.n-1] >= 560){game = false;}
 	
-
 	if(game){
 		createDotSnake();
 		createItem();
@@ -125,6 +124,7 @@ function render(){
 	else{
 		clearInterval(IntervalId);
 		clearInterval(IntervalId2);
+		console.log("end");
 	} 
 	
 }
@@ -157,11 +157,77 @@ function spawn(){
 		}while(map[y][x] == 1);
 
 		map[y][x] = 1;
-		console.log(x + " " + y);
 		item[num].x[item[num].n] = x*pixel;	
 		item[num].y[item[num].n] = y*pixel;
 		createItem(item[num]);
 		item[num].n++;
 	}
 
+}
+
+function checkhit(){
+	var x = snake.x[snake.n-1];
+	var y = snake.y[snake.n-1];
+	var m = 0;
+	var i,j;
+	for(var i = 0 ; i < snake.n-2 ; i++){
+		if(snake.x[i] == x && snake.y[i] == y)
+			game = false;
+	}
+
+	for(i = 0 ; i<3 ; i++){
+		for(j = 0 ; j < item[i].n ; j++){
+			if(item[i].x[j] == x && item[i].y[j] == y){
+				m = 1;
+				break;
+			}
+		}
+		if(m)break;
+	}
+	if(m){
+		add();
+		deleteitem(item[i],j);
+	}
+}
+function deleteitem(item,j){
+	map[item.y[j]/pixel][item.x[j]/pixel] = 0;
+	for(var i = 0 ; i < item.n ; i++){
+		if(i > j){
+			item.x[j] = item.x[i];
+			item.y[j] = item.y[i];
+			j++;
+		}
+	}
+	item.n--;
+}
+
+function add(){
+	var n = snake.n;
+	for(n ; n > 0 ; n--){
+		snake.x[n] = snake.x[n-1];
+		snake.y[n] = snake.y[n-1];
+		snake.order[n] = snake.order[n-1];
+	}
+
+	if(snake.order[1] == "r"){
+		snake.x[0] = snake.x[1] - pixel;
+		snake.y[0] = snake.y[1];
+	}
+	else if(snake.order[1] == "d"){
+		snake.x[0] = snake.x[1];
+		snake.y[0] = snake.y[1] - pixel;
+	}
+	else if(snake.order[1] == "l"){
+		snake.x[0] = snake.x[1] + pixel;
+		snake.y[0] = snake.y[1];
+	}
+	else if(snake.order[1] == "u"){
+		snake.x[0] = snake.x[1];
+		snake.y[0] = snake.y[1]+ pixel;
+	}
+	
+	snake.order[0] = snake.order[1];
+	snake.n++;
+	console.log(snake.n);
+	
 }
