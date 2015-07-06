@@ -1,6 +1,7 @@
 var game = true,
 	pixel = 14,
 	key = "r",
+	score = 0,
 	canvas = $("#canvas")[0],
 	ctx = canvas.getContext("2d"),
 	snake = {
@@ -59,9 +60,10 @@ for (var i = 0; i < 40; i++) {
 		}
   }
 
-
 $(document).ready(function(){
-	
+	for(var i = 0 ; i < 4 ; i++){
+		spawn();
+	}
 	render();
 
 	IntervalId = setInterval(function() {
@@ -73,7 +75,7 @@ $(document).ready(function(){
 
 	IntervalId2 = setInterval(function() {
    		spawn();
-	}, 3000);
+	}, 5000);
 
 	$(document).keydown(function(e) {
     switch(e.which) {
@@ -142,6 +144,8 @@ function render(){
 		clearInterval(IntervalId);
 		clearInterval(IntervalId2);
 		console.log("end");
+		alert("score: " + score);
+		
 	} 
 	
 }
@@ -203,7 +207,7 @@ function checkhit(){
 	}
 	if(m){
 		add(item[i]);
-		deleteitem(item[i],j);
+		removeitem(item[i],j);
 		if(snake.n > 3){
 			if(snake.color[0] == snake.color[1] && snake.color[1] == snake.color[2]){
 				removesnake();
@@ -211,18 +215,6 @@ function checkhit(){
 		}
 	}
 }
-function deleteitem(item,j){
-	map[item.y[j]/pixel][item.x[j]/pixel] = 0;
-	for(var i = 0 ; i < item.n ; i++){
-		if(i > j){
-			item.x[j] = item.x[i];
-			item.y[j] = item.y[i];
-			j++;
-		}
-	}
-	item.n--;
-}
-
 function add(item){
 	var n = snake.n;
 	for(n ; n > 0 ; n--){
@@ -254,6 +246,18 @@ function add(item){
 	console.log(snake.n);
 	
 }
+function removeitem(item,j){
+	map[item.y[j]/pixel][item.x[j]/pixel] = 0;
+	for(var i = 0 ; i < item.n ; i++){
+		if(i > j){
+			item.x[j] = item.x[i];
+			item.y[j] = item.y[i];
+			j++;
+		}
+	}
+	item.n--;
+}
+
 function removesnake(){
 	for(var i = 3 ; i < snake.n;i++){
 		snake.x[i-3] = snake.x[i];
@@ -262,4 +266,5 @@ function removesnake(){
 		snake.order[i-3] = snake.order[i];
 	}
 	snake.n-=3;
+	score+=3;
 }
