@@ -15,7 +15,8 @@ var game = true,
 	n: 3,
 	size: 10,
 	order:["r","r","r"],
-	color:["black","black","black"]
+	color:["black","black","black"],
+	time: 7000/60
 	},
 	item = [{
 		x: [],
@@ -92,7 +93,7 @@ function startgame(){
    		update();
    		render();
    		checkhit()
-	}, 7000/60);
+	}, snake.time);
 	
 
 	IntervalId2 = setInterval(function() {
@@ -210,7 +211,10 @@ function createScore(){
 	ctx.font = '20px Calibri';
 	ctx.textAlign = 'center';
     ctx.fillStyle = 'red';
-    ctx.fillText(score.num, score.x, score.y);
+    if(score.num > 50)	
+    ctx.fillText(score.num+"!!", score.x, score.y);
+	else 
+	ctx.fillText(score.num, score.x, score.y);
 }
 
 function spawn(){
@@ -313,4 +317,13 @@ function removesnake(){
 	snake.n-=3;
 	score.num+=3;
 	score.n = 10;
+	if(score.num %30 == 0){
+		snake.time /= 1.3;
+		clearInterval(IntervalId);
+			IntervalId = setInterval(function() {
+   			update();
+   			render();
+   			checkhit()
+		}, snake.time);
+	}
 }
