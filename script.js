@@ -1,7 +1,12 @@
 var game = true,
 	pixel = 14,
 	key = "r",
-	score = 0,
+	score = {
+		x : 0,
+		y : 0,
+		n : 0,
+		num : 0
+	},
 	canvas = $("#canvas")[0],
 	ctx = canvas.getContext("2d"),
 	snake = {
@@ -17,7 +22,7 @@ var game = true,
 		y: [],
 		n: 0,
 		size: 10,
-		color: "#CD0000"//red
+		color: "#800000"//red
 		},{
 		x: [],
 		y: [],
@@ -29,13 +34,13 @@ var game = true,
 		y: [],
 		n: 0,
 		size: 10,
-		color: "#EEEE00"//yellow
+		color: "#CD8500"//yellow
 		},{
 		x: [],
 		y: [],
 		n: 0,
 		size: 10,
-		color: "#68228B"//purple
+		color: "#EE00EE"//purple
 		},{
 		x: [],
 		y: [],
@@ -61,6 +66,23 @@ for (var i = 0; i < 40; i++) {
   }
 
 $(document).ready(function(){
+	var x = canvas.width / 2;
+    var y = canvas.height / 4;
+	ctx.font = '20pt Calibri';
+	ctx.textAlign = 'center';
+    ctx.fillStyle = 'black';
+    ctx.fillText('Press enter to start.', x, y);
+	
+	$(document).keydown(function(e) {
+    	if(e.which == 13){
+    		$(document).off();
+    		canvas.width = canvas.width;
+    		startgame();
+    	}
+	});
+
+});
+function startgame(){
 	for(var i = 0 ; i < 4 ; i++){
 		spawn();
 	}
@@ -75,7 +97,7 @@ $(document).ready(function(){
 
 	IntervalId2 = setInterval(function() {
    		spawn();
-	}, 5000);
+	}, 3000);
 
 	$(document).keydown(function(e) {
     switch(e.which) {
@@ -99,11 +121,26 @@ $(document).ready(function(){
     }
     e.preventDefault();
 });
-
-});
-function update(){
-	canvas.width = canvas.width;
+}
+function endgame(){
+	clearInterval(IntervalId);
+	clearInterval(IntervalId2);
+	var x = canvas.width / 2;
+    var y = canvas.height / 4;
+	ctx.font = '20pt Calibri';
+	ctx.textAlign = 'center';
+    ctx.fillStyle = 'black';
+    ctx.fillText('SCORE: '+score.num, x, y);
+	ctx.fillText('Press enter to restart', x, y*4/3);
+	$(document).keydown(function(e) {
+    	if(e.which == 13){
+    		location.reload();
+    	}
+	});
 	
+}
+
+function update(){
 	for(var i = 0 ; i < snake.n ; i++){
 		if(snake.y[i] >= 0 && snake.y[i]<=560 && snake.x[i] >= 0 && snake.x[i]<=560)
 		map[snake.y[i]/pixel][snake.x[i]/pixel] = 0;
@@ -122,30 +159,32 @@ function update(){
 			else if(snake.order[i]=="u"){snake.y[i]-=pixel;}
 			else if(snake.order[i]=="l"){snake.x[i]-=pixel;}
 			else if(snake.order[i]=="d"){snake.y[i]+=pixel;}
-			//console.log("**" + snake.y[i]);
+			
 			
 		}
 		if(snake.y[i] >= 0 && snake.y[i]<560 && snake.x[i] >= 0 && snake.x[i]<=560){
 			map[snake.y[i]/pixel][snake.x[i]/pixel] = 1;
 		}
 	}
+	score.x = snake.x[snake.n-1]+2;
+	score.y = snake.y[snake.n-1]-pixel/2;
 }
 
 function render(){
-	//console.log(snake.y[snake.n-1]);
+	canvas.width = canvas.width;
 	if(snake.y[snake.n-1] < 0 || snake.y[snake.n-1] >= 560){game = false;}
 	if(snake.x[snake.n-1] < 0 || snake.x[snake.n-1] >= 560){game = false;}
 	
 	if(game){
 		createDotSnake();
 		createItem();
+		if(score.n >0){
+			createScore();
+			score.n--;
+		}
 	}
 	else{
-		clearInterval(IntervalId);
-		clearInterval(IntervalId2);
-		console.log("end");
-		alert("score: " + score);
-		
+		endgame();
 	} 
 	
 }
@@ -162,10 +201,16 @@ function createItem(){
 	for(var num = 0 ; num < 6 ; num++){
 		for(var i = 0 ; i < item[num].n ; i++){
 			ctx.fillStyle = item[num].color;
-			console.log(item[0].color);
+			
 			ctx.fillRect(item[num].x[i],item[num].y[i],item[num].size,item[num].size);
 		}
 	}
+}
+function createScore(){
+	ctx.font = '20px Calibri';
+	ctx.textAlign = 'center';
+    ctx.fillStyle = 'red';
+    ctx.fillText(score.num, score.x, score.y);
 }
 
 function spawn(){
@@ -243,7 +288,7 @@ function add(item){
 	snake.color[0] = item.color;
 	snake.order[0] = snake.order[1];
 	snake.n++;
-	console.log(snake.n);
+	
 	
 }
 function removeitem(item,j){
@@ -266,5 +311,6 @@ function removesnake(){
 		snake.order[i-3] = snake.order[i];
 	}
 	snake.n-=3;
-	score+=3;
+	score.num+=3;
+	score.n = 10;
 }
