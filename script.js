@@ -65,24 +65,35 @@ for (var i = 0; i < 40; i++) {
 			map[i][j] = 0;
 		}
   }
-
+var down = {
+	x:0,
+	y:0,
+	};
+var up = {
+	x:0,
+	y:0,
+	};
 $(document).ready(function(){
 	var x = canvas.width / 2;
     var y = canvas.height / 4;
 	ctx.font = '20pt Calibri';
 	ctx.textAlign = 'center';
     ctx.fillStyle = 'black';
-    ctx.fillText('Press enter to start.', x, y);
+    ctx.fillText('Click to start.', x, y);
 	
-	$(document).keydown(function(e) {
-    	if(e.which == 13){
+	$(document).click(function() {
     		$(document).off();
     		canvas.width = canvas.width;
     		startgame();
-    	}
+	});
+	$(document).bind('touchend',function(){
+			$(document).off();
+    		canvas.width = canvas.width;
+    		startgame();
 	});
 
 });
+
 function startgame(){
 	for(var i = 0 ; i < 4 ; i++){
 		spawn();
@@ -101,27 +112,41 @@ function startgame(){
 	}, 3000);
 
 	$(document).keydown(function(e) {
-    switch(e.which) {
-        case 37: // left
-        if(key != "r")key = "l";
-        break;
+    	setkey(e.which);
+    	e.preventDefault();
+	});
+	
+	$(document).bind("touchstart",function(e){
+		e.preventDefault();
+  		var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+  		down.x = touch.pageX;
+  		down.y = touch.pageY;
+	});
+	$(document).bind("touchend",function(e){
+		e.preventDefault();
+  		var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+  		up.y = touch.pageY;
+  		up.x = touch.pageX;
 
-        case 38: // up
-        if(key != "d")key = "u";
-        break;
+  		if(Math.abs(up.x-down.x) > Math.abs(up.y-down.y)){
+			if(down.x > up.x && up.x !=0){
+				setkey(37);
+			}
+			else if(up.x > down.x){
+				setkey(39);
+			}
+		}
+		else{
+			if(down.y < up.y && up.y !=0){
+				setkey(40);
+			}
+			else if(up.y < down.y){
+				setkey(38);
+			}
+		}
+		e.preventDefault();
+	});
 
-        case 39: // right
-        if(key != "l")key ="r";
-        break;
-
-        case 40: // down
-        if(key != "u")key = "d";
-        break;
-
-        default: return;
-    }
-    e.preventDefault();
-});
 }
 function endgame(){
 	clearInterval(IntervalId);
@@ -132,12 +157,40 @@ function endgame(){
 	ctx.textAlign = 'center';
     ctx.fillStyle = 'black';
     ctx.fillText('SCORE: '+score.num, x, y);
-	ctx.fillText('Press enter to restart', x, y*4/3);
-	$(document).keydown(function(e) {
-    	if(e.which == 13){
+	ctx.fillText('Click to restart', x, y*4/3);
+	
+	$(document).click(function() {
     		location.reload();
-    	}
 	});
+	$(document).bind('touchend',function(){
+			location.reload();
+	});
+	
+}
+function setkey(event){
+	switch(event) {
+        	case 37: // left
+        	if(key != "r")key = "l";
+        	break;
+
+        	case 38: // up
+        	if(key != "d")key = "u";
+        	break;
+
+        	case 39: // right
+        	if(key != "l")key ="r";
+        	break;
+
+        	case 40: // down
+        	if(key != "u")key = "d";
+        	break;
+
+        	default: return;
+    	}
+    down.x = 0;
+	up.x = 0;
+	down.y = 0;
+	up.y = 0;
 	
 }
 
