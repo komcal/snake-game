@@ -1,13 +1,19 @@
 h1{
 	text-align: center;
+	color: white;
+	background-color: #282828;
+  	padding-top: 15px;
+  	padding-bottom: 15px;
+  	margin: -8px -8px 15px -8px;
+  	font-size: 50px;
 }
 canvas{
-	border: solid black 1px;
+	border: solid black 3px;
 	margin-left: auto;
     margin-right: auto;
     display: block;
     background-color: #FDF5E6;
 }
 body{
-	background-color: #9AFF9A;
+	background-color: #308014;
 }

@@ -292,8 +292,6 @@ function add(item){
 	snake.color[0] = item.color;
 	snake.order[0] = snake.order[1];
 	snake.n++;
-	
-	
 }
 function removeitem(item,j){
 	map[item.y[j]/pixel][item.x[j]/pixel] = 0;
@@ -318,7 +316,7 @@ function removesnake(){
 	score.num+=3;
 	score.n = 10;
 	if(score.num %30 == 0){
-		snake.time /= 1.3;
+		snake.time /= 1.2;
 		clearInterval(IntervalId);
 			IntervalId = setInterval(function() {
    			update();
